@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebMemLeak演示页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .title {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .module-list {
+            margin: 20px 0;
+        }
+        .module-item {
+            background: #e8f4f8;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid #007ACC;
+        }
+        button {
+            background: #007ACC;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #005a9e;
+        }
+        .info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">WebMemLeak演示页面</h1>
+        
+        <div class="info">
+            <h3>内存泄漏演示说明：</h3>
+            <p>这个页面展示了鸿蒙应用中TipsJsBridge和JsModule之间的循环引用导致的内存泄漏问题。</p>
+        </div>
+        
+        <div class="module-list">
+            <h3>已注册的JavaScript模块：</h3>
+            <div class="module-item">
+                <strong>userModule</strong> - 用户相关功能模块
+            </div>
+            <div class="module-item">
+                <strong>deviceModule</strong> - 设备信息模块
+            </div>
+            <div class="module-item">
+                <strong>networkModule</strong> - 网络请求模块
+            </div>
+        </div>
+        
+        <div style="text-align: center;">
+            <button onclick="callNativeMethod('getUserInfo')">调用用户模块</button>
+            <button onclick="callNativeMethod('getDeviceInfo')">调用设备模块</button>
+            <button onclick="callNativeMethod('getNetworkStatus')">调用网络模块</button>
+        </div>
+        
+        <div id="result" style="margin-top: 20px; padding: 10px; background: #f8f9fa; border-radius: 4px;">
+            等待JavaScript与Native交互...
+        </div>
+    </div>
+
+    <script>
+        // 模拟JavaScript与Native交互
+        function callNativeMethod(method) {
+            const result = document.getElementById('result');
+            result.innerHTML += `<p>正在调用Native方法: ${method}</p>`;
+            
+            // 尝试调用Native方法（如果桥接已注册）
+            try {
+                if (window.userModule && method === 'getUserInfo') {
+                    window.userModule.callNative('getUserInfo', JSON.stringify({userId: 123}));
+                } else if (window.deviceModule && method === 'getDeviceInfo') {
+                    window.deviceModule.callNative('getDeviceInfo', JSON.stringify({type: 'phone'}));
+                } else if (window.networkModule && method === 'getNetworkStatus') {
+                    window.networkModule.callNative('getNetworkStatus', JSON.stringify({check: true}));
+                } else {
+                    result.innerHTML += `<p style="color: orange;">警告: ${method} 对应的模块未注册到Native</p>`;
+                }
+            } catch (error) {
+                result.innerHTML += `<p style="color: red;">错误: ${error.message}</p>`;
+            }
+        }
+        
+        // 模拟从Native调用的JavaScript方法
+        window.userModule = {
+            onModuleWork: function(params) {
+                const result = document.getElementById('result');
+                result.innerHTML += `<p style="color: green;">收到Native回调: userModule.onModuleWork(${JSON.stringify(params)})</p>`;
+            }
+        };
+        
+        window.deviceModule = {
+            onModuleWork: function(params) {
+                const result = document.getElementById('result');
+                result.innerHTML += `<p style="color: green;">收到Native回调: deviceModule.onModuleWork(${JSON.stringify(params)})</p>`;
+            }
+        };
+        
+        window.networkModule = {
+            onModuleWork: function(params) {
+                const result = document.getElementById('result');
+                result.innerHTML += `<p style="color: green;">收到Native回调: networkModule.onModuleWork(${JSON.stringify(params)})</p>`;
+            }
+        };
+        
+        console.log('WebMemLeak演示页面JavaScript已加载');
+    </script>
+</body>
+</html>
