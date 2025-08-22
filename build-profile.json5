@@ -1,6 +1,20 @@
 {
   "app": {
-    "signingConfigs": [],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\wangt\\.ohos\\config\\default_WebMemLeak_iiA5cJUfIyZuZjY2yRVSUFb0xE_8J4_Dba1r2k_d0EI=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001BFA1C2C4B51476AF861DE6A6A3E18470674262A27233838CB0FE39F314AFD721462E442C299F049",
+          "profile": "C:\\Users\\wangt\\.ohos\\config\\default_WebMemLeak_iiA5cJUfIyZuZjY2yRVSUFb0xE_8J4_Dba1r2k_d0EI=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\wangt\\.ohos\\config\\default_WebMemLeak_iiA5cJUfIyZuZjY2yRVSUFb0xE_8J4_Dba1r2k_d0EI=.p12",
+          "storePassword": "0000001BF8CCBCE9E9C89E1ECCFAA05E971EE838423FA47634B70CF2E85096DF12FD9606E9AFC7CDFB6337"
+        }
+      }
+    ],
     "products": [
       {
         "name": "default",

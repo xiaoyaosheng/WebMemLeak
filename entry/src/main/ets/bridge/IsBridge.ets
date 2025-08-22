@@ -1,7 +1,7 @@
 /**
  * JavaScript桥接接口
  */
-export interface IsBridge {
+export interface JsBridge {
   /**
    * 注册JS模块
    * @param moduleName 模块名称

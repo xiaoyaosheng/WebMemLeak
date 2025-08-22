@@ -183,9 +183,17 @@ struct Index {
           .border({ width: 1, color: Color.Gray })
           .onPageEnd(() => {
             console.log('Web页面加载完成');
+            // 通知TipsJsBridge Web组件已准备好
+            if (this.jsBridge) {
+              this.jsBridge.onWebComponentReady();
+            }
           })
           .onErrorReceive((event) => {
             console.log('Web加载错误，使用本地HTML');
+            // 即使加载错误，也通知Bridge准备完成
+            if (this.jsBridge) {
+              this.jsBridge.onWebComponentReady();
+            }
           })
       }
       
