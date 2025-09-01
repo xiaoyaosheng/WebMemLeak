@@ -49,13 +49,15 @@ struct Index {
       'paymentModule', 'securityModule', 'analyticsModule', 'notificationModule'
     ];
     
-    modules.forEach(moduleName => {
-      const moduleCallNative = (method: string, params: string) => {
-        console.log(`${moduleName} Native方法被调用: ${method}, 参数: ${params}`);
-      };
-      const module = new JsBridgeModule(moduleCallNative);
-      this.jsBridge.registerModule(moduleName, module);
-    });
+    if (this.jsBridge) {
+      modules.forEach(moduleName => {
+        const moduleCallNative = (method: string, params: string) => {
+          console.log(`${moduleName} Native方法被调用: ${method}, 参数: ${params}`);
+        };
+        const module = new JsBridgeModule(moduleCallNative);
+        this.jsBridge!.registerModule(moduleName, module);
+      });
+    }
     
     this.showWeb = true;
     this.updateMemoryInfo();
