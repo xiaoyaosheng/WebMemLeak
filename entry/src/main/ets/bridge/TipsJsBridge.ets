@@ -64,8 +64,8 @@ export class TipsJsBridge implements JsBridge, LifeCycle, ITipsJsBridge {
   registerModule(moduleName: string, module: Object): void {
     console.log(`⚠️ [LEAK_ANALYSIS] TipsJsBridge [${this.bridgeId}] registering module: ${moduleName}`);
     
-    // 为了让内存泄漏更明显，每个模块创建多个实例
-    const moduleInstanceCount = 5;
+    // 为了让内存泄漏更明显，每个模块创建更多实例
+    const moduleInstanceCount = 20;
     
     if (!this.supportApiMap.hasKey(moduleName)) {
       this.supportApiMap.set(moduleName, new Set<JsModule>());
@@ -79,12 +79,19 @@ export class TipsJsBridge implements JsBridge, LifeCycle, ITipsJsBridge {
         moduleSet.add(jsModule);
         
         // 模拟一些大量数据存储，增加内存占用（带有Profile标识）
-        const largeData: string[] = new Array(1000).fill(`${this.leakMarker}_大量数据_${moduleName}_${i}`);
+        const largeData: string[] = new Array(5000).fill(`${this.leakMarker}_大量数据_${moduleName}_${i}`);
         jsModule.setData(`${this.leakMarker}_largeDataArray`, largeData);
         jsModule.setData(`${this.leakMarker}_timestamp`, new Date().toString());
         jsModule.setData(`${this.leakMarker}_moduleIndex`, i);
         jsModule.setData(`${this.leakMarker}_bridgeId`, this.bridgeId);
-        jsModule.setData(`${this.leakMarker}_randomData`, Math.random().toString(36).repeat(100));
+        jsModule.setData(`${this.leakMarker}_randomData`, Math.random().toString(36).repeat(500));
+        
+        // 添加更多占用内存的数据
+        const extraLargeData: string[] = [];
+        for (let j = 0; j < 1000; j++) {
+          extraLargeData.push(`${this.leakMarker}_额外大数据_${moduleName}_${i}_${j}_${Math.random().toString(36).repeat(100)}`);
+        }
+        jsModule.setData(`${this.leakMarker}_extraLargeDataArray`, extraLargeData);
         
         console.log(`⚠️ [LEAK_ANALYSIS] Created JsModule instance: ${jsModule.getUniqueId()}`);
       }
@@ -254,11 +261,11 @@ export class TipsJsBridge implements JsBridge, LifeCycle, ITipsJsBridge {
       });
     });
     
-    console.log(`\n⚠️ [LEAK_ANALYSIS] === 泄漏统计信息 ===`);
+    console.log(`⚠️ [LEAK_ANALYSIS] === 泄漏统计信息 ===`);
     console.log(`⚠️ [LEAK_ANALYSIS] 总实例数: ${totalInstances}`);
     console.log(`⚠️ [LEAK_ANALYSIS] 总内存项数: ${totalMemoryItems}`);
-    console.log(`⚠️ [LEAK_ANALYSIS] 预估内存占用: ${Math.round(totalInstances * 0.5)}MB`);
-    console.log(`⚠️ [LEAK_ANALYSIS] 循环引用链: TipsJsBridge[${this.bridgeId}] <-> JsModule instances`);
+    console.log(`⚠️ [LEAK_ANALYSIS] 预估内存占用: ${Math.round(totalInstances * 2)}MB`);
+    console.log(`⚠️ [LEAK_ANALYSIS] 循环引用链: TipsJsBridge[${this.bridgeId}] <-> ${totalInstances} JsModule instances`);
     console.log(`⚠️ [LEAK_ANALYSIS] 关键字: ${this.leakMarker}, MEMORY_LEAK_MARKER`);
     console.log('⚠️ [LEAK_ANALYSIS] Web组件已销毁，但supportApiMap未清空，形成循环引用内存泄漏！');
     console.log('=== ⚠️ [LEAK_ANALYSIS] 分析结束 ===\n\n');

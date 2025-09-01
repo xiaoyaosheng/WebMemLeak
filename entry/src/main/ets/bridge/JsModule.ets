@@ -19,9 +19,9 @@ export class JsModule {
     this.bridge = bridge;
     this.uniqueId = `JsModule_${name}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
-    // 创建大量内存占用数据，让泄漏更明显
-    for (let i = 0; i < 200; i++) {
-      this.memoryHolders.push(`${this.leakMarker}_大容量数据块_${name}_${i}_${Math.random().toString(36).repeat(50)}`);
+    // 创建大量内存占用数据，让泄漏更明显（增加到2000个数据块）
+    for (let i = 0; i < 2000; i++) {
+      this.memoryHolders.push(`${this.leakMarker}_大容量数据块_${name}_${i}_${Math.random().toString(36).repeat(200)}`);
     }
     
     // 添加显著的标识信息
@@ -95,8 +95,8 @@ export class JsModule {
     console.log(`⚠️ [LEAK_ANALYSIS] JsModule [${this.moduleName}] doing work #${this.workCounter}, ID: ${this.uniqueId}`);
     
     // 每次工作都添加更多内存占用（带有明显标识）
-    for (let i = 0; i < 50; i++) {
-      this.memoryHolders.push(`${this.leakMarker}_工作数据_${this.workCounter}_${i}_${this.uniqueId}_${Math.random().toString(36).repeat(30)}`);
+    for (let i = 0; i < 500; i++) {
+      this.memoryHolders.push(`${this.leakMarker}_工作数据_${this.workCounter}_${i}_${this.uniqueId}_${Math.random().toString(36).repeat(100)}`);
     }
     
     // 添加更多有标识的数据
